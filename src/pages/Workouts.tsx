@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Dumbbell, Target, Award } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const workoutPlans = [
   {
@@ -48,6 +49,8 @@ const workoutPlans = [
 ];
 
 const Workouts = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen">
       <Navigation />
@@ -85,7 +88,7 @@ const Workouts = () => {
                   ))}
                 </ul>
 
-                <Button variant="hero" className="w-full">
+                <Button variant="hero" className="w-full" onClick={() => navigate(`/workouts/${plan.id}`)}>
                   Get Program
                 </Button>
               </Card>

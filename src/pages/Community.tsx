@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Users, MessageSquare, Trophy, Heart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const forumCategories = [
   {
@@ -36,6 +37,8 @@ const forumCategories = [
 ];
 
 const Community = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen">
       <Navigation />
@@ -57,7 +60,7 @@ const Community = () => {
               Join our exclusive community to connect with like-minded athletes, 
               share your progress, and get support on your fitness journey
             </p>
-            <Button variant="hero" size="lg">
+            <Button variant="hero" size="lg" onClick={() => navigate('/community/hub')}>
               Unlock Community Access
             </Button>
           </Card>

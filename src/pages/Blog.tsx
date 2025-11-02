@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Lock, Eye } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const blogPosts = [
   {
@@ -44,6 +45,8 @@ const blogPosts = [
 ];
 
 const Blog = () => {
+  const navigate = useNavigate();
+
   const getAccessIcon = (access: string) => {
     switch (access) {
       case "public":
@@ -96,6 +99,7 @@ const Blog = () => {
                   <Button 
                     variant={post.access === "private" ? "hero" : "outline"}
                     className={post.access !== "private" ? "border-primary text-primary hover:bg-primary/10" : ""}
+                    onClick={() => navigate(`/blog/${post.id}`)}
                   >
                     {post.access === "private" ? "Members Only" : "Read More"}
                   </Button>

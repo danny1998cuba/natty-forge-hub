@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const products = [
   {
@@ -50,6 +51,8 @@ const products = [
 ];
 
 const Store = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen">
       <Navigation />
@@ -65,7 +68,11 @@ const Store = () => {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {products.map((product) => (
-              <Card key={product.id} className="gradient-card border-border overflow-hidden hover:border-primary transition-smooth group">
+              <Card 
+                key={product.id} 
+                className="gradient-card border-border overflow-hidden hover:border-primary transition-smooth group cursor-pointer"
+                onClick={() => navigate(`/store/${product.id}`)}
+              >
                 <div className="aspect-square overflow-hidden relative">
                   {product.badge && (
                     <Badge className="absolute top-3 right-3 bg-primary z-10">
