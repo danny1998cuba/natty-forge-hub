@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Footer } from "@/components/Footer";
+import { AdminLayout } from "@/components/AdminLayout";
 import Index from "./pages/Index";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
@@ -18,6 +19,13 @@ import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
+import Dashboard from "./pages/admin/Dashboard";
+import Users from "./pages/admin/Users";
+import Products from "./pages/admin/Products";
+import Plans from "./pages/admin/Plans";
+import BlogManagement from "./pages/admin/BlogManagement";
+import CommunityManagement from "./pages/admin/CommunityManagement";
+import Settings from "./pages/admin/Settings";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +51,18 @@ const App = () => (
               <Route path="/contact" element={<Contact />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/checkout" element={<Checkout />} />
+              
+              {/* Admin Routes */}
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="users" element={<Users />} />
+                <Route path="products" element={<Products />} />
+                <Route path="plans" element={<Plans />} />
+                <Route path="blog" element={<BlogManagement />} />
+                <Route path="community" element={<CommunityManagement />} />
+                <Route path="settings" element={<Settings />} />
+              </Route>
+              
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
