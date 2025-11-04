@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,10 +12,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search, UserPlus, MoreVertical } from "lucide-react";
+import { Search, UserPlus, Edit } from "lucide-react";
 import { mockUsers, type User } from "@/data/mockAdminData";
 
 export default function Users() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [users] = useState<User[]>(mockUsers);
 
@@ -43,7 +45,7 @@ export default function Users() {
           <h2 className="text-3xl font-bold tracking-tight">Users Management</h2>
           <p className="text-muted-foreground">Manage user accounts and roles</p>
         </div>
-        <Button>
+        <Button onClick={() => navigate("/admin/users/create")}>
           <UserPlus className="mr-2 h-4 w-4" />
           Add User
         </Button>
@@ -95,8 +97,13 @@ export default function Users() {
                   <TableCell>{user.joinedDate}</TableCell>
                   <TableCell>{user.lastActive}</TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">
-                      <MoreVertical className="h-4 w-4" />
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => navigate(`/admin/users/${user.id}/edit`)}
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit
                     </Button>
                   </TableCell>
                 </TableRow>

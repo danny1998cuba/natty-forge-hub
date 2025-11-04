@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ import { Search, Plus, Eye, Edit, Trash } from "lucide-react";
 import { mockBlogPosts, type BlogPost } from "@/data/mockAdminData";
 
 export default function BlogManagement() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [posts] = useState<BlogPost[]>(mockBlogPosts);
 
@@ -30,7 +32,7 @@ export default function BlogManagement() {
           <h2 className="text-3xl font-bold tracking-tight">Blog Management</h2>
           <p className="text-muted-foreground">Create and manage blog posts</p>
         </div>
-        <Button>
+        <Button onClick={() => navigate("/admin/blog/create")}>
           <Plus className="mr-2 h-4 w-4" />
           New Post
         </Button>
@@ -88,7 +90,11 @@ export default function BlogManagement() {
                   <TableCell>{post.publishedDate}</TableCell>
                   <TableCell>
                     <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="sm">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => navigate(`/admin/blog/${post.id}/edit`)}
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button variant="ghost" size="sm">

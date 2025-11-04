@@ -15,12 +15,12 @@ export interface User {
 export interface Product {
   id: string;
   name: string;
-  description: string;
-  price: number;
+  description?: string;
   category: string;
+  price: number;
   stock: number;
-  status: 'active' | 'draft';
-  image: string;
+  status: 'active' | 'inactive' | 'out-of-stock';
+  image?: string;
 }
 
 export interface Plan {
@@ -28,7 +28,7 @@ export interface Plan {
   name: string;
   description: string;
   price: number;
-  duration: string;
+  billingPeriod: 'monthly' | 'yearly';
   features: string[];
   subscribers: number;
   status: 'active' | 'inactive';
@@ -37,11 +37,14 @@ export interface Plan {
 export interface BlogPost {
   id: string;
   title: string;
+  excerpt: string;
+  content: string;
   author: string;
-  status: 'published' | 'draft';
+  category: string;
+  featuredImage?: string;
+  status: 'draft' | 'published' | 'archived';
   publishedDate: string;
   views: number;
-  category: string;
 }
 
 export interface CommunityPost {
@@ -66,20 +69,20 @@ export const mockProducts: Product[] = [
   { id: '1', name: 'Protein Powder', description: 'High-quality whey protein', price: 49.99, category: 'Supplements', stock: 150, status: 'active', image: '/placeholder.svg' },
   { id: '2', name: 'Resistance Bands', description: 'Set of 5 resistance bands', price: 29.99, category: 'Equipment', stock: 200, status: 'active', image: '/placeholder.svg' },
   { id: '3', name: 'Yoga Mat', description: 'Premium non-slip yoga mat', price: 39.99, category: 'Equipment', stock: 75, status: 'active', image: '/placeholder.svg' },
-  { id: '4', name: 'Pre-Workout', description: 'Energy-boosting supplement', price: 34.99, category: 'Supplements', stock: 100, status: 'draft', image: '/placeholder.svg' },
+  { id: '4', name: 'Pre-Workout', description: 'Energy-boosting supplement', price: 34.99, category: 'Supplements', stock: 100, status: 'inactive', image: '/placeholder.svg' },
 ];
 
 export const mockPlans: Plan[] = [
-  { id: '1', name: 'Basic Plan', description: 'Perfect for beginners', price: 29, duration: 'month', features: ['Access to workouts', 'Basic nutrition guide', 'Email support'], subscribers: 145, status: 'active' },
-  { id: '2', name: 'Pro Plan', description: 'For serious athletes', price: 59, duration: 'month', features: ['All Basic features', 'Custom workout plans', 'Priority support', 'Meal planning'], subscribers: 89, status: 'active' },
-  { id: '3', name: 'Elite Plan', description: 'Complete transformation', price: 99, duration: 'month', features: ['All Pro features', '1-on-1 coaching', 'Weekly video calls', 'Supplement guidance'], subscribers: 34, status: 'active' },
+  { id: '1', name: 'Basic Plan', description: 'Perfect for beginners', price: 29, billingPeriod: 'monthly', features: ['Access to workouts', 'Basic nutrition guide', 'Email support'], subscribers: 145, status: 'active' },
+  { id: '2', name: 'Pro Plan', description: 'For serious athletes', price: 59, billingPeriod: 'monthly', features: ['All Basic features', 'Custom workout plans', 'Priority support', 'Meal planning'], subscribers: 89, status: 'active' },
+  { id: '3', name: 'Elite Plan', description: 'Complete transformation', price: 99, billingPeriod: 'monthly', features: ['All Pro features', '1-on-1 coaching', 'Weekly video calls', 'Supplement guidance'], subscribers: 34, status: 'active' },
 ];
 
 export const mockBlogPosts: BlogPost[] = [
-  { id: '1', title: '10 Tips for Building Muscle', author: 'John Doe', status: 'published', publishedDate: '2024-03-01', views: 1245, category: 'Training' },
-  { id: '2', title: 'The Science of Protein Intake', author: 'Jane Smith', status: 'published', publishedDate: '2024-03-05', views: 890, category: 'Nutrition' },
-  { id: '3', title: 'Recovery Techniques for Athletes', author: 'John Doe', status: 'draft', publishedDate: '2024-03-10', views: 0, category: 'Recovery' },
-  { id: '4', title: 'Mindset Mastery Guide', author: 'Jane Smith', status: 'published', publishedDate: '2024-02-28', views: 2100, category: 'Mindset' },
+  { id: '1', title: '10 Tips for Building Muscle', excerpt: 'Discover the essential tips for maximizing muscle growth', content: 'Full article content here...', author: 'John Doe', category: 'Training', status: 'published', publishedDate: '2024-03-01', views: 1245 },
+  { id: '2', title: 'The Science of Protein Intake', excerpt: 'Understanding how much protein you really need', content: 'Full article content here...', author: 'Jane Smith', category: 'Nutrition', status: 'published', publishedDate: '2024-03-05', views: 890 },
+  { id: '3', title: 'Recovery Techniques for Athletes', excerpt: 'Learn the best recovery methods for peak performance', content: 'Full article content here...', author: 'John Doe', category: 'Recovery', status: 'draft', publishedDate: '2024-03-10', views: 0 },
+  { id: '4', title: 'Mindset Mastery Guide', excerpt: 'Transform your mental approach to fitness', content: 'Full article content here...', author: 'Jane Smith', category: 'Mindset', status: 'published', publishedDate: '2024-02-28', views: 2100 },
 ];
 
 export const mockCommunityPosts: CommunityPost[] = [

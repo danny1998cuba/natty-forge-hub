@@ -26,6 +26,14 @@ import Plans from "./pages/admin/Plans";
 import BlogManagement from "./pages/admin/BlogManagement";
 import CommunityManagement from "./pages/admin/CommunityManagement";
 import Settings from "./pages/admin/Settings";
+import CreateUser from "./pages/admin/users/CreateUser";
+import EditUser from "./pages/admin/users/EditUser";
+import CreateProduct from "./pages/admin/products/CreateProduct";
+import EditProduct from "./pages/admin/products/EditProduct";
+import CreatePlan from "./pages/admin/plans/CreatePlan";
+import EditPlan from "./pages/admin/plans/EditPlan";
+import CreateBlogPost from "./pages/admin/blog/CreateBlogPost";
+import EditBlogPost from "./pages/admin/blog/EditBlogPost";
 
 const queryClient = new QueryClient();
 
@@ -55,9 +63,17 @@ const AppContent = () => {
           <Route path="/admin" element={<AdminLayout />}>
             <Route index element={<Dashboard />} />
             <Route path="users" element={<Users />} />
+            <Route path="users/create" element={<CreateUser />} />
+            <Route path="users/:id/edit" element={<EditUser />} />
             <Route path="products" element={<Products />} />
+            <Route path="products/create" element={<CreateProduct />} />
+            <Route path="products/:id/edit" element={<EditProduct />} />
             <Route path="plans" element={<Plans />} />
+            <Route path="plans/create" element={<CreatePlan />} />
+            <Route path="plans/:id/edit" element={<EditPlan />} />
             <Route path="blog" element={<BlogManagement />} />
+            <Route path="blog/create" element={<CreateBlogPost />} />
+            <Route path="blog/:id/edit" element={<EditBlogPost />} />
             <Route path="community" element={<CommunityManagement />} />
             <Route path="settings" element={<Settings />} />
           </Route>

@@ -1,10 +1,13 @@
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Users, DollarSign, Check } from "lucide-react";
+import { Plus, Users, DollarSign, Check, Edit } from "lucide-react";
 import { mockPlans } from "@/data/mockAdminData";
 
 export default function Plans() {
+  const navigate = useNavigate();
+  
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -12,7 +15,7 @@ export default function Plans() {
           <h2 className="text-3xl font-bold tracking-tight">Plans Management</h2>
           <p className="text-muted-foreground">Manage subscription plans and pricing</p>
         </div>
-        <Button>
+        <Button onClick={() => navigate("/admin/plans/create")}>
           <Plus className="mr-2 h-4 w-4" />
           Create Plan
         </Button>
@@ -33,7 +36,7 @@ export default function Plans() {
             <CardContent className="space-y-4">
               <div className="flex items-baseline gap-2">
                 <span className="text-4xl font-bold">${plan.price}</span>
-                <span className="text-muted-foreground">/{plan.duration}</span>
+                <span className="text-muted-foreground">/{plan.billingPeriod === 'monthly' ? 'mo' : 'yr'}</span>
               </div>
 
               <div className="flex items-center gap-4 text-sm">
@@ -58,7 +61,14 @@ export default function Plans() {
               </div>
 
               <div className="flex gap-2 pt-4">
-                <Button variant="outline" className="flex-1">Edit</Button>
+                <Button 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => navigate(`/admin/plans/${plan.id}/edit`)}
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </Button>
                 <Button variant="outline" className="flex-1">View</Button>
               </div>
             </CardContent>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,10 +12,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search, Plus, MoreVertical } from "lucide-react";
+import { Search, Plus, Edit } from "lucide-react";
 import { mockProducts, type Product } from "@/data/mockAdminData";
 
 export default function Products() {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [products] = useState<Product[]>(mockProducts);
 
@@ -30,7 +32,7 @@ export default function Products() {
           <h2 className="text-3xl font-bold tracking-tight">Products Management</h2>
           <p className="text-muted-foreground">Manage store products and inventory</p>
         </div>
-        <Button>
+        <Button onClick={() => navigate("/admin/products/create")}>
           <Plus className="mr-2 h-4 w-4" />
           Add Product
         </Button>
@@ -92,8 +94,13 @@ export default function Products() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button variant="ghost" size="sm">
-                      <MoreVertical className="h-4 w-4" />
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => navigate(`/admin/products/${product.id}/edit`)}
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit
                     </Button>
                   </TableCell>
                 </TableRow>
