@@ -10,6 +10,7 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Workouts from "./pages/Workouts";
 import WorkoutDetails from "./pages/WorkoutDetails";
+import CourseViewer from "./pages/CourseViewer";
 import Store from "./pages/Store";
 import ProductDetails from "./pages/ProductDetails";
 import Community from "./pages/Community";
@@ -50,6 +51,7 @@ const AppContent = () => {
           <Route path="/blog/:id" element={<BlogPost />} />
           <Route path="/workouts" element={<Workouts />} />
           <Route path="/workouts/:id" element={<WorkoutDetails />} />
+          <Route path="/course/:id" element={<CourseViewer />} />
           <Route path="/store" element={<Store />} />
           <Route path="/store/:id" element={<ProductDetails />} />
           <Route path="/community" element={<Community />} />

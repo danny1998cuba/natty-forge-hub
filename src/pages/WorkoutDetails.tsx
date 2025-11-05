@@ -128,7 +128,12 @@ const WorkoutDetails = () => {
                   <p className="text-sm text-muted-foreground">One-time payment</p>
                 </div>
 
-                <Button variant="hero" size="lg" className="w-full mb-4">
+                <Button 
+                  variant="hero" 
+                  size="lg" 
+                  className="w-full mb-4"
+                  onClick={() => navigate(`/course/${id}`)}
+                >
                   <Download className="h-5 w-5 mr-2" />
                   Get Program
                 </Button>
