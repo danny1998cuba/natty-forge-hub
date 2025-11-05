@@ -1,12 +1,36 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Users, DollarSign, Check, Edit } from "lucide-react";
-import { mockPlans } from "@/data/mockAdminData";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Plus, Users, DollarSign, Check, Edit, Trash } from "lucide-react";
+import { mockPlans, type Plan } from "@/data/mockAdminData";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Plans() {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [deletePlan, setDeletePlan] = useState<Plan | null>(null);
+
+  const handleDelete = () => {
+    if (deletePlan) {
+      toast({
+        title: "Plan deleted",
+        description: `${deletePlan.name} plan has been removed.`,
+      });
+      setDeletePlan(null);
+    }
+  };
   
   return (
     <div className="space-y-6">
@@ -69,12 +93,38 @@ export default function Plans() {
                   <Edit className="h-4 w-4 mr-2" />
                   Edit
                 </Button>
-                <Button variant="outline" className="flex-1">View</Button>
+                <Button 
+                  variant="outline" 
+                  className="flex-1"
+                  onClick={() => setDeletePlan(plan)}
+                >
+                  <Trash className="h-4 w-4 mr-2" />
+                  Delete
+                </Button>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      <AlertDialog open={!!deletePlan} onOpenChange={() => setDeletePlan(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Plan</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete the <strong>{deletePlan?.name}</strong> plan? This will affect{" "}
+              <strong>{deletePlan?.subscribers} active subscribers</strong>. They will need to be migrated to another plan. 
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

@@ -12,13 +12,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Search, UserPlus, Edit } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Search, UserPlus, Edit, Trash } from "lucide-react";
 import { mockUsers, type User } from "@/data/mockAdminData";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Users() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [users] = useState<User[]>(mockUsers);
+  const [deleteUser, setDeleteUser] = useState<User | null>(null);
 
   const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -36,6 +49,16 @@ export default function Users() {
 
   const getStatusBadgeVariant = (status: string) => {
     return status === 'active' ? 'default' : 'secondary';
+  };
+
+  const handleDelete = () => {
+    if (deleteUser) {
+      toast({
+        title: "User deleted",
+        description: `${deleteUser.name} has been removed from the system.`,
+      });
+      setDeleteUser(null);
+    }
   };
 
   return (
@@ -97,14 +120,23 @@ export default function Users() {
                   <TableCell>{user.joinedDate}</TableCell>
                   <TableCell>{user.lastActive}</TableCell>
                   <TableCell className="text-right">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => navigate(`/admin/users/${user.id}/edit`)}
-                    >
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit
-                    </Button>
+                    <div className="flex justify-end gap-2">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => navigate(`/admin/users/${user.id}/edit`)}
+                      >
+                        <Edit className="h-4 w-4 mr-2" />
+                        Edit
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => setDeleteUser(user)}
+                      >
+                        <Trash className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -112,6 +144,24 @@ export default function Users() {
           </Table>
         </CardContent>
       </Card>
+
+      <AlertDialog open={!!deleteUser} onOpenChange={() => setDeleteUser(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete User</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <strong>{deleteUser?.name}</strong>? This action cannot be undone. 
+              All user data, posts, and activity will be permanently removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
