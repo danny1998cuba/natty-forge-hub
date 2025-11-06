@@ -3,9 +3,18 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Lock, Eye } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
-const blogPosts = [
+const allBlogPosts = [
   {
     id: 1,
     title: "The Science of Natural Muscle Building",
@@ -42,10 +51,42 @@ const blogPosts = [
     access: "public",
     image: "https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=800&q=80"
   },
+  {
+    id: 5,
+    title: "Deload Weeks: When and How",
+    excerpt: "Master the art of strategic deloading for continuous progress...",
+    category: "Training",
+    readTime: "9 min",
+    access: "public",
+    image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80"
+  },
+  {
+    id: 6,
+    title: "Supplement Guide for Natural Athletes",
+    excerpt: "Evidence-based supplement recommendations that actually work...",
+    category: "Nutrition",
+    readTime: "14 min",
+    access: "partial",
+    image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=800&q=80"
+  },
 ];
+
+const POSTS_PER_PAGE = 4;
 
 const Blog = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = parseInt(searchParams.get("page") || "1", 10);
+
+  const totalPages = Math.ceil(allBlogPosts.length / POSTS_PER_PAGE);
+  const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
+  const endIndex = startIndex + POSTS_PER_PAGE;
+  const blogPosts = allBlogPosts.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setSearchParams({ page: page.toString() });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   const getAccessIcon = (access: string) => {
     switch (access) {
@@ -107,6 +148,51 @@ const Blog = () => {
               </Card>
             ))}
           </div>
+
+          {totalPages > 1 && (
+            <div className="mt-12">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage > 1) handlePageChange(currentPage - 1);
+                      }}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(page);
+                        }}
+                        isActive={currentPage === page}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  
+                  <PaginationItem>
+                    <PaginationNext 
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                      }}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </div>
       </div>
     </div>

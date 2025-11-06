@@ -42,7 +42,7 @@ export const Navigation = () => {
                 {item.name}
               </Link>
             ))}
-            <Button variant="hero" size="sm">
+            <Button variant="hero" size="sm" onClick={() => window.location.href = '/plans'}>
               Join Now
             </Button>
           </div>
@@ -73,7 +73,7 @@ export const Navigation = () => {
                 {item.name}
               </Link>
             ))}
-            <Button variant="hero" size="sm" className="w-full">
+            <Button variant="hero" size="sm" className="w-full" onClick={() => window.location.href = '/plans'}>
               Join Now
             </Button>
           </div>

@@ -2,10 +2,19 @@ import { Navigation } from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, Dumbbell, Target, Award } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { TrendingUp, Dumbbell, Target, Award, Zap, Trophy } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
-const workoutPlans = [
+const allWorkoutPlans = [
   {
     id: 1,
     title: "Natural Hypertrophy Program",
@@ -46,10 +55,44 @@ const workoutPlans = [
     features: ["Peak week protocol", "Posing guide", "Weekly check-ins"],
     icon: Award
   },
+  {
+    id: 5,
+    title: "Fat Loss Accelerator",
+    description: "Preserve muscle while cutting body fat effectively",
+    level: "Intermediate",
+    duration: "10 weeks",
+    price: "$45",
+    features: ["Cardio protocols", "Macro adjustments", "Progress tracking"],
+    icon: Zap
+  },
+  {
+    id: 6,
+    title: "Powerlifting Fundamentals",
+    description: "Master the big three lifts with proper technique",
+    level: "Beginner",
+    duration: "12 weeks",
+    price: "$42",
+    features: ["Video form checks", "Strength programming", "Mobility work"],
+    icon: Trophy
+  },
 ];
+
+const PLANS_PER_PAGE = 4;
 
 const Workouts = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = parseInt(searchParams.get("page") || "1", 10);
+
+  const totalPages = Math.ceil(allWorkoutPlans.length / PLANS_PER_PAGE);
+  const startIndex = (currentPage - 1) * PLANS_PER_PAGE;
+  const endIndex = startIndex + PLANS_PER_PAGE;
+  const workoutPlans = allWorkoutPlans.slice(startIndex, endIndex);
+
+  const handlePageChange = (page: number) => {
+    setSearchParams({ page: page.toString() });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <div className="min-h-screen">
@@ -94,6 +137,51 @@ const Workouts = () => {
               </Card>
             ))}
           </div>
+
+          {totalPages > 1 && (
+            <div className="mt-12">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage > 1) handlePageChange(currentPage - 1);
+                      }}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                  
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <PaginationItem key={page}>
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handlePageChange(page);
+                        }}
+                        isActive={currentPage === page}
+                      >
+                        {page}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  
+                  <PaginationItem>
+                    <PaginationNext 
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage < totalPages) handlePageChange(currentPage + 1);
+                      }}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </div>
       </div>
     </div>

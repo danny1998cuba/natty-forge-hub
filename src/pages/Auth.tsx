@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { Dumbbell } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -64,13 +65,15 @@ const Auth = () => {
                         required
                       />
                     </div>
-                    <Button
-                      type="button"
-                      variant="link"
-                      className="px-0 text-primary"
-                    >
-                      Forgot password?
-                    </Button>
+                    <Link to="/forgot-password">
+                      <Button
+                        type="button"
+                        variant="link"
+                        className="px-0 text-primary"
+                      >
+                        Forgot password?
+                      </Button>
+                    </Link>
                     <Button
                       type="submit"
                       variant="hero"

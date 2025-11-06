@@ -90,14 +90,19 @@ export const Footer = () => {
                 </Link>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-smooth">
-                  FAQ
-                </a>
+                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-smooth">
+                  Privacy Policy
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-smooth">
-                  Privacy Policy
-                </a>
+                <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-smooth">
+                  Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link to="/cookies" className="text-sm text-muted-foreground hover:text-primary transition-smooth">
+                  Cookies Policy
+                </Link>
               </li>
             </ul>
           </div>

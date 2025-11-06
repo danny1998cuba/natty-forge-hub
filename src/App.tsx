@@ -18,6 +18,12 @@ import CommunityHub from "./pages/CommunityHub";
 import Tools from "./pages/Tools";
 import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
+import MembershipPlans from "./pages/MembershipPlans";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsConditions from "./pages/TermsConditions";
+import CookiesPolicy from "./pages/CookiesPolicy";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/admin/Dashboard";
@@ -59,6 +65,12 @@ const AppContent = () => {
           <Route path="/tools" element={<Tools />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/auth" element={<Auth />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/plans" element={<MembershipPlans />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/terms" element={<TermsConditions />} />
+          <Route path="/cookies" element={<CookiesPolicy />} />
           <Route path="/checkout" element={<Checkout />} />
           
           {/* Admin Routes */}

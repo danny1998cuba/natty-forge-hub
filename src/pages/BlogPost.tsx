@@ -2,12 +2,64 @@ import { Navigation } from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, ArrowLeft, Share2, Bookmark } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Clock, ArrowLeft, Share2, Bookmark, MessageSquare } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+
+const mockComments = [
+  {
+    id: 1,
+    author: "Mike Johnson",
+    avatar: "MJ",
+    date: "2 days ago",
+    content: "Great article! This really helped me understand progressive overload better. I've been implementing these techniques and seeing consistent gains."
+  },
+  {
+    id: 2,
+    author: "Sarah Williams",
+    avatar: "SW",
+    date: "5 days ago",
+    content: "The part about deload weeks was eye-opening. I used to think rest was for the weak, but now I understand it's crucial for long-term progress."
+  },
+  {
+    id: 3,
+    author: "Tom Anderson",
+    avatar: "TA",
+    date: "1 week ago",
+    content: "Could you elaborate more on the nutrition aspects? Would love to see a follow-up article specifically about macro tracking for natural lifters."
+  },
+];
 
 const BlogPost = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [newComment, setNewComment] = useState("");
+  const [comments, setComments] = useState(mockComments);
+
+  const handleCommentSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+
+    const comment = {
+      id: comments.length + 1,
+      author: "You",
+      avatar: "YO",
+      date: "Just now",
+      content: newComment,
+    };
+
+    setComments([comment, ...comments]);
+    setNewComment("");
+    toast({
+      title: "Comment posted!",
+      description: "Your comment has been added successfully.",
+    });
+  };
 
   // Mock data - in real app this would come from a backend
   const post = {
@@ -106,6 +158,57 @@ const BlogPost = () => {
               Become a Member
             </Button>
           </Card>
+
+          {/* Comments Section */}
+          <div className="mt-12">
+            <Separator className="mb-8" />
+            
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-6">
+                <MessageSquare className="h-5 w-5 text-primary" />
+                <h2 className="text-2xl font-bold">Comments ({comments.length})</h2>
+              </div>
+
+              {/* Comment Form */}
+              <Card className="gradient-card border-border p-6 mb-8">
+                <form onSubmit={handleCommentSubmit} className="space-y-4">
+                  <Textarea
+                    placeholder="Share your thoughts..."
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    className="min-h-[100px]"
+                  />
+                  <div className="flex justify-end">
+                    <Button type="submit" variant="hero" disabled={!newComment.trim()}>
+                      Post Comment
+                    </Button>
+                  </div>
+                </form>
+              </Card>
+
+              {/* Comments List */}
+              <div className="space-y-6">
+                {comments.map((comment) => (
+                  <Card key={comment.id} className="gradient-card border-border p-6">
+                    <div className="flex gap-4">
+                      <Avatar>
+                        <AvatarFallback className="bg-primary/10 text-primary">
+                          {comment.avatar}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="font-semibold">{comment.author}</span>
+                          <span className="text-sm text-muted-foreground">{comment.date}</span>
+                        </div>
+                        <p className="text-muted-foreground">{comment.content}</p>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </article>
     </div>
