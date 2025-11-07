@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Dumbbell } from "lucide-react";
+import { Menu, X, Dumbbell, User } from "lucide-react";
 import { Button } from "./ui/button";
 
 const navItems = [
@@ -42,6 +42,11 @@ export const Navigation = () => {
                 {item.name}
               </Link>
             ))}
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/profile">
+                <User className="w-4 h-4" />
+              </Link>
+            </Button>
             <Button variant="hero" size="sm" onClick={() => window.location.href = '/plans'}>
               Join Now
             </Button>
@@ -73,6 +78,14 @@ export const Navigation = () => {
                 {item.name}
               </Link>
             ))}
+            <Link
+              to="/profile"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-2 py-2 text-sm font-medium transition-smooth hover:text-primary text-muted-foreground"
+            >
+              <User className="w-4 h-4" />
+              Profile
+            </Link>
             <Button variant="hero" size="sm" className="w-full" onClick={() => window.location.href = '/plans'}>
               Join Now
             </Button>

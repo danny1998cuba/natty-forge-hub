@@ -26,6 +26,7 @@ import TermsConditions from "./pages/TermsConditions";
 import CookiesPolicy from "./pages/CookiesPolicy";
 import Checkout from "./pages/Checkout";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
 import Dashboard from "./pages/admin/Dashboard";
 import Users from "./pages/admin/Users";
 import Products from "./pages/admin/Products";
@@ -72,6 +73,7 @@ const AppContent = () => {
           <Route path="/terms" element={<TermsConditions />} />
           <Route path="/cookies" element={<CookiesPolicy />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/profile" element={<Profile />} />
           
           {/* Admin Routes */}
           <Route path="/admin" element={<AdminLayout />}>
