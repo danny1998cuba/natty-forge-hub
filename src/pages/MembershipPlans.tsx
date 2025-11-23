@@ -2,8 +2,16 @@ import { Navigation } from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check } from "lucide-react";
+import { Check, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const plans = [
   {
@@ -120,6 +128,140 @@ const MembershipPlans = () => {
             <p className="text-sm text-muted-foreground">
               All paid plans include a 7-day free trial. Cancel anytime.
             </p>
+          </div>
+
+          {/* Comparison Table Section */}
+          <div className="mt-20 max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="mb-4">Compare All Features</h2>
+              <p className="text-lg text-muted-foreground">
+                See exactly what's included in each plan
+              </p>
+            </div>
+
+            <div className="gradient-card border border-border rounded-lg overflow-hidden">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="hover:bg-transparent border-border">
+                      <TableHead className="w-[300px] text-foreground font-semibold">Features</TableHead>
+                      <TableHead className="text-center text-foreground font-semibold">Free</TableHead>
+                      <TableHead className="text-center text-foreground font-semibold">
+                        <div className="flex items-center justify-center gap-2">
+                          Pro
+                          <Badge className="bg-primary text-primary-foreground text-xs">Popular</Badge>
+                        </div>
+                      </TableHead>
+                      <TableHead className="text-center text-foreground font-semibold">Elite</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    <TableRow className="border-border">
+                      <TableCell className="font-medium text-foreground">Access to public blog posts</TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                    <TableRow className="border-border">
+                      <TableCell className="font-medium text-foreground">Basic workout library</TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                    <TableRow className="border-border">
+                      <TableCell className="font-medium text-foreground">Community forum access</TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                    <TableRow className="border-border">
+                      <TableCell className="font-medium text-foreground">Weekly newsletter</TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                    <TableRow className="border-border bg-muted/20">
+                      <TableCell className="font-medium text-foreground">Full blog access</TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                    <TableRow className="border-border bg-muted/20">
+                      <TableCell className="font-medium text-foreground">All workout programs</TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                    <TableRow className="border-border bg-muted/20">
+                      <TableCell className="font-medium text-foreground">Nutrition calculator tools</TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                    <TableRow className="border-border bg-muted/20">
+                      <TableCell className="font-medium text-foreground">Priority support</TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                    <TableRow className="border-border bg-muted/20">
+                      <TableCell className="font-medium text-foreground">Exclusive member content</TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                    <TableRow className="border-border bg-muted/20">
+                      <TableCell className="font-medium text-foreground">Monthly live Q&A sessions</TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                    <TableRow className="border-border bg-accent/30">
+                      <TableCell className="font-medium text-foreground">1-on-1 coaching calls</TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                    <TableRow className="border-border bg-accent/30">
+                      <TableCell className="font-medium text-foreground">Custom meal plans</TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                    <TableRow className="border-border bg-accent/30">
+                      <TableCell className="font-medium text-foreground">Custom workout programming</TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                    <TableRow className="border-border bg-accent/30">
+                      <TableCell className="font-medium text-foreground">Weekly progress reviews</TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                    <TableRow className="border-border bg-accent/30">
+                      <TableCell className="font-medium text-foreground">24/7 priority support</TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                    <TableRow className="border-border bg-accent/30">
+                      <TableCell className="font-medium text-foreground">Private Discord channel</TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                    <TableRow className="border-border bg-accent/30">
+                      <TableCell className="font-medium text-foreground">Competition prep guidance</TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><X className="h-5 w-5 text-muted-foreground mx-auto" /></TableCell>
+                      <TableCell className="text-center"><Check className="h-5 w-5 text-primary mx-auto" /></TableCell>
+                    </TableRow>
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
           </div>
         </div>
       </div>
