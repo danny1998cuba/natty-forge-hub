@@ -10,6 +10,7 @@ import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { User, CreditCard, BookOpen, Bookmark, Mail, Lock, Calendar, CheckCircle2, PlayCircle, FileText, Dumbbell, Shield, Trash2, Bell, Key, Camera, Fingerprint, Smartphone, ExternalLink, AlertTriangle } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
@@ -58,6 +59,14 @@ const mockSavedContent = {
     { id: "2", title: "Recovery Techniques", type: "Blog Post", savedDate: "2024-02-10" }
   ]
 };
+
+const mockTransactions = [
+  { id: "TXN-001", date: "2024-11-20", concept: "Elite Plan - Monthly", amount: "$49.99", status: "Completed" },
+  { id: "TXN-002", date: "2024-11-15", concept: "Workout Plan - Advanced Strength", amount: "$29.99", status: "Completed" },
+  { id: "TXN-003", date: "2024-10-20", concept: "Elite Plan - Monthly", amount: "$49.99", status: "Completed" },
+  { id: "TXN-004", date: "2024-10-10", concept: "Merchandise - Gym T-Shirt", amount: "$24.99", status: "Completed" },
+  { id: "TXN-005", date: "2024-09-20", concept: "Elite Plan - Monthly", amount: "$49.99", status: "Completed" },
+];
 
 export default function Profile() {
   const { toast } = useToast();
@@ -210,6 +219,7 @@ export default function Profile() {
     { id: "security", label: "Security", icon: Shield },
     { id: "connected", label: "Connected Accounts", icon: ExternalLink },
     { id: "subscription", label: "Subscription", icon: CreditCard },
+    { id: "billing", label: "Billing & Transactions", icon: CreditCard },
     { id: "courses", label: "My Learning", icon: BookOpen },
     { id: "saved", label: "Saved Content", icon: Bookmark },
     { id: "notifications", label: "Notifications", icon: Bell },
@@ -483,8 +493,65 @@ export default function Profile() {
               </Card>
             )}
 
-            {/* Subscription Section */}
-            {activeSection === "subscription" && (
+              {/* Billing Section */}
+              {activeSection === "billing" && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Billing & Transactions</CardTitle>
+                    <CardDescription>View your transaction history and manage billing</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    <div>
+                      <Button 
+                        variant="outline" 
+                        className="w-full sm:w-auto"
+                        onClick={() => window.open('https://polar.sh/customer-portal', '_blank')}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Access Customer Portal
+                      </Button>
+                      <p className="text-sm text-muted-foreground mt-2">
+                        Manage your subscriptions, payment methods, and invoices on Polar.sh
+                      </p>
+                    </div>
+
+                    <Separator />
+
+                    <div>
+                      <h3 className="text-lg font-semibold mb-4">Transaction History</h3>
+                      <div className="rounded-md border">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>Transaction ID</TableHead>
+                              <TableHead>Date</TableHead>
+                              <TableHead>Concept</TableHead>
+                              <TableHead>Amount</TableHead>
+                              <TableHead>Status</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {mockTransactions.map((transaction) => (
+                              <TableRow key={transaction.id}>
+                                <TableCell className="font-medium">{transaction.id}</TableCell>
+                                <TableCell>{transaction.date}</TableCell>
+                                <TableCell>{transaction.concept}</TableCell>
+                                <TableCell>{transaction.amount}</TableCell>
+                                <TableCell>
+                                  <Badge variant="secondary">{transaction.status}</Badge>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Subscription Section */}
+              {activeSection === "subscription" && (
 
             <Card>
               <CardHeader>

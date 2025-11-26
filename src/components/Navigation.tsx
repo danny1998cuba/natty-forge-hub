@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, Dumbbell, User } from "lucide-react";
+import { Menu, X, Dumbbell, User, Globe, LogIn } from "lucide-react";
 import { Button } from "./ui/button";
+import { Label } from "./ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 
 const navItems = [
   { name: "Home", path: "/" },
@@ -15,6 +18,8 @@ const navItems = [
 
 export const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [language, setLanguage] = useState("en");
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Mock auth state
   const location = useLocation();
 
   return (
@@ -28,7 +33,7 @@ export const Navigation = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden lg:flex items-center gap-4">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -42,11 +47,49 @@ export const Navigation = () => {
                 {item.name}
               </Link>
             ))}
-            <Button variant="ghost" size="sm" asChild>
-              <Link to="/profile">
-                <User className="w-4 h-4" />
-              </Link>
-            </Button>
+            
+            <Select value={language} onValueChange={setLanguage}>
+              <SelectTrigger className="w-[100px] h-8">
+                <Globe className="w-4 h-4 mr-2" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="en">English</SelectItem>
+                <SelectItem value="es">Español</SelectItem>
+                <SelectItem value="fr">Français</SelectItem>
+                <SelectItem value="de">Deutsch</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {isLoggedIn ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm">
+                    <User className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile">Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin">Admin</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={() => setIsLoggedIn(false)}>
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/auth">
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Login
+                </Link>
+              </Button>
+            )}
+
             <Button variant="hero" size="sm" onClick={() => window.location.href = '/plans'}>
               Join Now
             </Button>
@@ -55,7 +98,7 @@ export const Navigation = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-foreground"
+            className="lg:hidden text-foreground"
           >
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -63,7 +106,7 @@ export const Navigation = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className="md:hidden mt-4 pb-4 space-y-3">
+          <div className="lg:hidden mt-4 pb-4 space-y-3">
             {navItems.map((item) => (
               <Link
                 key={item.path}
@@ -78,14 +121,61 @@ export const Navigation = () => {
                 {item.name}
               </Link>
             ))}
-            <Link
-              to="/profile"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center gap-2 py-2 text-sm font-medium transition-smooth hover:text-primary text-muted-foreground"
-            >
-              <User className="w-4 h-4" />
-              Profile
-            </Link>
+            
+            <div className="pt-2">
+              <Label className="text-xs text-muted-foreground mb-2 block">Language</Label>
+              <Select value={language} onValueChange={setLanguage}>
+                <SelectTrigger className="w-full">
+                  <Globe className="w-4 h-4 mr-2" />
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="es">Español</SelectItem>
+                  <SelectItem value="fr">Français</SelectItem>
+                  <SelectItem value="de">Deutsch</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {isLoggedIn ? (
+              <>
+                <Link
+                  to="/profile"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2 py-2 text-sm font-medium transition-smooth hover:text-primary text-muted-foreground"
+                >
+                  <User className="w-4 h-4" />
+                  Profile
+                </Link>
+                <Link
+                  to="/admin"
+                  onClick={() => setIsOpen(false)}
+                  className="flex items-center gap-2 py-2 text-sm font-medium transition-smooth hover:text-primary text-muted-foreground"
+                >
+                  Admin
+                </Link>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full" 
+                  onClick={() => {
+                    setIsLoggedIn(false);
+                    setIsOpen(false);
+                  }}
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <Button variant="outline" size="sm" className="w-full" asChild>
+                <Link to="/auth" onClick={() => setIsOpen(false)}>
+                  <LogIn className="w-4 h-4 mr-2" />
+                  Login
+                </Link>
+              </Button>
+            )}
+
             <Button variant="hero" size="sm" className="w-full" onClick={() => window.location.href = '/plans'}>
               Join Now
             </Button>
