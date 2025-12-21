@@ -1,9 +1,11 @@
+import { useState, useMemo } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { TrendingUp, Dumbbell, Target, Award, Zap, Trophy } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { InlineSearch } from "@/components/InlineSearch";
 import {
   Pagination,
   PaginationContent,
@@ -83,11 +85,24 @@ const Workouts = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const totalPages = Math.ceil(allWorkoutPlans.length / PLANS_PER_PAGE);
+  // Filter workouts based on search query (ready for vector search API)
+  const filteredWorkouts = useMemo(() => {
+    if (!searchQuery.trim()) return allWorkoutPlans;
+    const query = searchQuery.toLowerCase();
+    return allWorkoutPlans.filter(plan =>
+      plan.title.toLowerCase().includes(query) ||
+      plan.description.toLowerCase().includes(query) ||
+      plan.level.toLowerCase().includes(query) ||
+      plan.features.some(f => f.toLowerCase().includes(query))
+    );
+  }, [searchQuery]);
+
+  const totalPages = Math.ceil(filteredWorkouts.length / PLANS_PER_PAGE);
   const startIndex = (currentPage - 1) * PLANS_PER_PAGE;
   const endIndex = startIndex + PLANS_PER_PAGE;
-  const workoutPlans = allWorkoutPlans.slice(startIndex, endIndex);
+  const workoutPlans = filteredWorkouts.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
     setSearchParams({ page: page.toString() });
@@ -102,9 +117,19 @@ const Workouts = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto mb-12 text-center">
             <h1 className="mb-4">Workout Programs</h1>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl text-muted-foreground mb-6">
               Scientifically designed training programs for natural athletes
             </p>
+            <div className="max-w-md mx-auto">
+              <InlineSearch
+                placeholder="Search programs..."
+                value={searchQuery}
+                onChange={(value) => {
+                  setSearchQuery(value);
+                  setSearchParams({ page: "1" });
+                }}
+              />
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">

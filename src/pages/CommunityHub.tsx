@@ -1,10 +1,11 @@
+import { useState, useMemo } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { Avatar } from "@/components/ui/avatar";
-import { Users, MessageSquare, Trophy, Heart, Search, TrendingUp, Pin } from "lucide-react";
+import { Users, MessageSquare, Trophy, Heart, TrendingUp, Pin } from "lucide-react";
+import { InlineSearch } from "@/components/InlineSearch";
 
 const forumPosts = [
   {
@@ -67,6 +68,19 @@ const leaderboard = [
 ];
 
 const CommunityHub = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Filter posts based on search query (ready for vector search API)
+  const filteredPosts = useMemo(() => {
+    if (!searchQuery.trim()) return forumPosts;
+    const query = searchQuery.toLowerCase();
+    return forumPosts.filter(post =>
+      post.title.toLowerCase().includes(query) ||
+      post.author.toLowerCase().includes(query) ||
+      post.category.toLowerCase().includes(query)
+    );
+  }, [searchQuery]);
+
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case "Training Discussion":
@@ -99,14 +113,13 @@ const CommunityHub = () => {
               {/* Search and Filter */}
               <Card className="gradient-card border-border p-4">
                 <div className="flex gap-3">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                      placeholder="Search discussions..." 
-                      className="pl-10 border-border bg-background"
-                    />
-                  </div>
-                  <Button variant="outline" className="border-border hover:border-primary">
+                  <InlineSearch
+                    placeholder="Search discussions..."
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                    className="flex-1"
+                  />
+                  <Button variant="outline" className="border-border hover:border-primary shrink-0">
                     Filter
                   </Button>
                 </div>
@@ -120,7 +133,7 @@ const CommunityHub = () => {
 
               {/* Forum Posts */}
               <div className="space-y-4">
-                {forumPosts.map((post) => (
+                {filteredPosts.map((post) => (
                   <Card key={post.id} className="gradient-card border-border p-6 hover:border-primary transition-smooth group cursor-pointer">
                     <div className="flex gap-4">
                       <Avatar className="h-12 w-12 border-2 border-primary">
