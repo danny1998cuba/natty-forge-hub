@@ -1,9 +1,11 @@
+import { useState, useMemo } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Clock, Lock, Eye } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { InlineSearch } from "@/components/InlineSearch";
 import {
   Pagination,
   PaginationContent,
@@ -77,11 +79,23 @@ const Blog = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const totalPages = Math.ceil(allBlogPosts.length / POSTS_PER_PAGE);
+  // Filter posts based on search query (ready for vector search API)
+  const filteredPosts = useMemo(() => {
+    if (!searchQuery.trim()) return allBlogPosts;
+    const query = searchQuery.toLowerCase();
+    return allBlogPosts.filter(post =>
+      post.title.toLowerCase().includes(query) ||
+      post.excerpt.toLowerCase().includes(query) ||
+      post.category.toLowerCase().includes(query)
+    );
+  }, [searchQuery]);
+
+  const totalPages = Math.ceil(filteredPosts.length / POSTS_PER_PAGE);
   const startIndex = (currentPage - 1) * POSTS_PER_PAGE;
   const endIndex = startIndex + POSTS_PER_PAGE;
-  const blogPosts = allBlogPosts.slice(startIndex, endIndex);
+  const blogPosts = filteredPosts.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
     setSearchParams({ page: page.toString() });
@@ -109,9 +123,19 @@ const Blog = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto mb-12 text-center">
             <h1 className="mb-4">Fitness Blog</h1>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl text-muted-foreground mb-6">
               Deep dives into training, nutrition, and natural bodybuilding science
             </p>
+            <div className="max-w-md mx-auto">
+              <InlineSearch
+                placeholder="Search articles..."
+                value={searchQuery}
+                onChange={(value) => {
+                  setSearchQuery(value);
+                  setSearchParams({ page: "1" });
+                }}
+              />
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">

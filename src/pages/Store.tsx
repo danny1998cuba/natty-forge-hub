@@ -1,9 +1,11 @@
+import { useState, useMemo } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { InlineSearch } from "@/components/InlineSearch";
 
 const products = [
   {
@@ -52,6 +54,17 @@ const products = [
 
 const Store = () => {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Filter products based on search query (ready for vector search API)
+  const filteredProducts = useMemo(() => {
+    if (!searchQuery.trim()) return products;
+    const query = searchQuery.toLowerCase();
+    return products.filter(product =>
+      product.name.toLowerCase().includes(query) ||
+      product.badge?.toLowerCase().includes(query)
+    );
+  }, [searchQuery]);
 
   return (
     <div className="min-h-screen">
@@ -61,13 +74,20 @@ const Store = () => {
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto mb-12 text-center">
             <h1 className="mb-4">Merchandise Store</h1>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl text-muted-foreground mb-6">
               Premium fitness gear and Currently Natty apparel
             </p>
+            <div className="max-w-md mx-auto">
+              <InlineSearch
+                placeholder="Search products..."
+                value={searchQuery}
+                onChange={setSearchQuery}
+              />
+            </div>
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <Card 
                 key={product.id} 
                 className="gradient-card border-border overflow-hidden hover:border-primary transition-smooth group cursor-pointer"
