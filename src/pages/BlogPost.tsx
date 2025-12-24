@@ -4,50 +4,59 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Clock, ArrowLeft, Share2, Bookmark, MessageSquare, ThumbsUp, Reply, Tag } from "lucide-react";
+import { Clock, ArrowLeft, Share2, Bookmark, MessageSquare, ThumbsUp, Reply, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useToast } from "@/hooks/use-toast";
 
-const mockComments = [
-  {
-    id: 1,
-    author: "Mike Johnson",
-    avatar: "MJ",
-    date: "2 days ago",
-    content: "Great article! This really helped me understand progressive overload better. I've been implementing these techniques and seeing consistent gains.",
-    likes: 12,
-    replies: [
-      {
-        id: 11,
-        author: "Currently Natty Team",
-        avatar: "CN",
-        date: "1 day ago",
-        content: "Thanks Mike! Glad to hear you're seeing results. Keep pushing!",
-        likes: 5
-      }
-    ]
-  },
-  {
-    id: 2,
-    author: "Sarah Williams",
-    avatar: "SW",
-    date: "5 days ago",
-    content: "The part about deload weeks was eye-opening. I used to think rest was for the weak, but now I understand it's crucial for long-term progress.",
-    likes: 8,
-    replies: []
-  },
-  {
-    id: 3,
-    author: "Tom Anderson",
-    avatar: "TA",
-    date: "1 week ago",
-    content: "Could you elaborate more on the nutrition aspects? Would love to see a follow-up article specifically about macro tracking for natural lifters.",
-    likes: 15,
-    replies: []
-  },
-];
+// Generate more mock comments for infinite scroll demo
+const generateMockComments = (count: number, startId: number = 1) => {
+  const names = ["Mike Johnson", "Sarah Williams", "Tom Anderson", "Emily Chen", "David Kim", "Lisa Park", "James Wilson", "Anna Martinez"];
+  const contents = [
+    "Great article! This really helped me understand progressive overload better.",
+    "The part about deload weeks was eye-opening.",
+    "Could you elaborate more on the nutrition aspects?",
+    "I've been implementing these techniques and seeing consistent gains.",
+    "This is exactly what I needed to read today.",
+    "Fantastic breakdown of the science behind muscle growth.",
+    "Would love to see more content like this!",
+    "Been training for years and still learned something new."
+  ];
+  
+  return Array.from({ length: count }, (_, i) => {
+    const name = names[Math.floor(Math.random() * names.length)];
+    const hasReplies = Math.random() > 0.6;
+    const replyCount = hasReplies ? Math.floor(Math.random() * 5) + 1 : 0;
+    
+    return {
+      id: startId + i,
+      author: name,
+      email: `${name.toLowerCase().replace(' ', '.')}@email.com`,
+      avatar: name.split(' ').map(n => n[0]).join(''),
+      date: `${Math.floor(Math.random() * 30) + 1} days ago`,
+      content: contents[Math.floor(Math.random() * contents.length)],
+      likes: Math.floor(Math.random() * 50),
+      replies: Array.from({ length: replyCount }, (_, j) => {
+        const replyName = names[Math.floor(Math.random() * names.length)];
+        return {
+          id: (startId + i) * 1000 + j,
+          author: replyName,
+          email: `${replyName.toLowerCase().replace(' ', '.')}@email.com`,
+          avatar: replyName.split(' ').map(n => n[0]).join(''),
+          date: `${Math.floor(Math.random() * 10) + 1} days ago`,
+          content: contents[Math.floor(Math.random() * contents.length)],
+          likes: Math.floor(Math.random() * 20),
+          replyTo: null as string | null
+        };
+      })
+    };
+  });
+};
+
+const COMMENTS_PER_PAGE = 5;
+const REPLIES_PREVIEW_COUNT = 2;
 
 const mockRelatedPosts = [
   {
@@ -73,31 +82,129 @@ const mockRelatedPosts = [
   }
 ];
 
+interface ReplyType {
+  id: number;
+  author: string;
+  email: string;
+  avatar: string;
+  date: string;
+  content: string;
+  likes: number;
+  replyTo: string | null;
+}
+
+interface CommentType {
+  id: number;
+  author: string;
+  email: string;
+  avatar: string;
+  date: string;
+  content: string;
+  likes: number;
+  replies: ReplyType[];
+}
+
 const BlogPost = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  
+  // Comment form state
+  const [commentName, setCommentName] = useState("");
+  const [commentEmail, setCommentEmail] = useState("");
   const [newComment, setNewComment] = useState("");
-  const [comments, setComments] = useState(mockComments);
-  const [replyingTo, setReplyingTo] = useState<number | null>(null);
+  
+  // Comments state
+  const [allComments] = useState<CommentType[]>(generateMockComments(25));
+  const [displayedComments, setDisplayedComments] = useState<CommentType[]>([]);
+  const [hasMore, setHasMore] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Reply state
+  const [replyingTo, setReplyingTo] = useState<{ commentId: number; replyToUser?: string } | null>(null);
+  const [replyName, setReplyName] = useState("");
+  const [replyEmail, setReplyEmail] = useState("");
   const [replyContent, setReplyContent] = useState("");
+  
+  // Expanded replies state
+  const [expandedReplies, setExpandedReplies] = useState<Set<number>>(new Set());
+  
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  // Initial load
+  useEffect(() => {
+    setDisplayedComments(allComments.slice(0, COMMENTS_PER_PAGE));
+    setHasMore(allComments.length > COMMENTS_PER_PAGE);
+  }, [allComments]);
+
+  // Infinite scroll observer
+  const loadMoreComments = useCallback(() => {
+    if (isLoading || !hasMore) return;
+    
+    setIsLoading(true);
+    // Simulate API delay
+    setTimeout(() => {
+      const currentLength = displayedComments.length;
+      const nextComments = allComments.slice(currentLength, currentLength + COMMENTS_PER_PAGE);
+      
+      if (nextComments.length > 0) {
+        setDisplayedComments(prev => [...prev, ...nextComments]);
+        setHasMore(currentLength + nextComments.length < allComments.length);
+      } else {
+        setHasMore(false);
+      }
+      setIsLoading(false);
+    }, 500);
+  }, [allComments, displayedComments.length, hasMore, isLoading]);
+
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoading) {
+          loadMoreComments();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (loadMoreRef.current) {
+      observerRef.current.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [hasMore, isLoading, loadMoreComments]);
 
   const handleCommentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newComment.trim()) return;
+    if (!newComment.trim() || !commentName.trim() || !commentEmail.trim()) {
+      toast({
+        title: "Missing fields",
+        description: "Please fill in your name, email, and comment.",
+        variant: "destructive"
+      });
+      return;
+    }
 
-    const comment = {
-      id: comments.length + 1,
-      author: "You",
-      avatar: "YO",
+    const comment: CommentType = {
+      id: Date.now(),
+      author: commentName,
+      email: commentEmail,
+      avatar: commentName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
       date: "Just now",
       content: newComment,
       likes: 0,
       replies: []
     };
 
-    setComments([comment, ...comments]);
+    setDisplayedComments([comment, ...displayedComments]);
     setNewComment("");
+    setCommentName("");
+    setCommentEmail("");
     toast({
       title: "Comment posted!",
       description: "Your comment has been added successfully.",
@@ -105,31 +212,64 @@ const BlogPost = () => {
   };
 
   const handleReplySubmit = (commentId: number) => {
-    if (!replyContent.trim()) return;
+    if (!replyContent.trim() || !replyName.trim() || !replyEmail.trim()) {
+      toast({
+        title: "Missing fields",
+        description: "Please fill in your name, email, and reply.",
+        variant: "destructive"
+      });
+      return;
+    }
 
-    setComments(comments.map(comment => {
+    const newReply: ReplyType = {
+      id: Date.now(),
+      author: replyName,
+      email: replyEmail,
+      avatar: replyName.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase(),
+      date: "Just now",
+      content: replyContent,
+      likes: 0,
+      replyTo: replyingTo?.replyToUser || null
+    };
+
+    setDisplayedComments(displayedComments.map(comment => {
       if (comment.id === commentId) {
         return {
           ...comment,
-          replies: [...comment.replies, {
-            id: Date.now(),
-            author: "You",
-            avatar: "YO",
-            date: "Just now",
-            content: replyContent,
-            likes: 0
-          }]
+          replies: [...comment.replies, newReply]
         };
       }
       return comment;
     }));
 
+    // Auto-expand replies when adding new one
+    setExpandedReplies(prev => new Set([...prev, commentId]));
+    
     setReplyContent("");
+    setReplyName("");
+    setReplyEmail("");
     setReplyingTo(null);
     toast({
       title: "Reply posted!",
       description: "Your reply has been added.",
     });
+  };
+
+  const toggleReplies = (commentId: number) => {
+    setExpandedReplies(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(commentId)) {
+        newSet.delete(commentId);
+      } else {
+        newSet.add(commentId);
+      }
+      return newSet;
+    });
+  };
+
+  const startReplyToReply = (commentId: number, replyAuthor: string) => {
+    setReplyingTo({ commentId, replyToUser: replyAuthor });
+    setReplyContent(`@${replyAuthor} `);
   };
 
   // Mock data - in real app this would come from a backend
@@ -170,6 +310,8 @@ const BlogPost = () => {
     `
   };
 
+  const totalComments = allComments.length + allComments.reduce((acc, c) => acc + c.replies.length, 0);
+
   return (
     <div className="min-h-screen">
       <Navigation />
@@ -195,7 +337,7 @@ const BlogPost = () => {
           </div>
 
           {/* Meta Information */}
-          <div className="flex flex-wrap items-center gap-4 mb-4">
+          <div className="flex flex-wrap items-center gap-4 mb-6">
             <Badge variant="outline" className="border-primary text-primary">
               {post.category}
             </Badge>
@@ -204,20 +346,12 @@ const BlogPost = () => {
               {post.readTime}
             </div>
             <span className="text-sm text-muted-foreground">{post.publishDate}</span>
-          </div>
-
-          {/* Tags */}
-          <div className="flex flex-wrap items-center gap-2 mb-6">
-            <Tag className="h-4 w-4 text-muted-foreground" />
-            {post.tags.map((tag) => (
-              <Badge 
-                key={tag} 
-                variant="secondary" 
-                className="text-xs cursor-pointer hover:bg-primary/20 transition-colors"
-              >
-                {tag}
-              </Badge>
-            ))}
+            {/* Inline Tags - compact design */}
+            <span className="text-muted-foreground">·</span>
+            <span className="text-sm text-muted-foreground">
+              {post.tags.slice(0, 3).join(", ")}
+              {post.tags.length > 3 && ` +${post.tags.length - 3}`}
+            </span>
           </div>
 
           {/* Title */}
@@ -248,6 +382,19 @@ const BlogPost = () => {
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
           </Card>
+
+          {/* Tags Section - at end of content */}
+          <div className="flex flex-wrap gap-2 mt-6">
+            {post.tags.map((tag) => (
+              <Link 
+                key={tag} 
+                to={`/blog?tag=${encodeURIComponent(tag)}`}
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
+              >
+                #{tag.replace(/\s+/g, '')}
+              </Link>
+            ))}
+          </div>
 
           {/* Call to Action */}
           <Card className="gradient-card border-primary p-8 mt-8 text-center">
@@ -299,125 +446,211 @@ const BlogPost = () => {
             <div className="mb-8">
               <div className="flex items-center gap-2 mb-6">
                 <MessageSquare className="h-5 w-5 text-primary" />
-                <h2 className="text-2xl font-bold">Discussion ({comments.length})</h2>
+                <h2 className="text-2xl font-bold">Discussion ({totalComments})</h2>
               </div>
 
               {/* Comment Form */}
               <Card className="gradient-card border-border p-6 mb-8">
                 <form onSubmit={handleCommentSubmit} className="space-y-4">
-                  <div className="flex gap-4">
-                    <Avatar className="hidden sm:flex">
-                      <AvatarFallback className="bg-primary/10 text-primary">YO</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1">
-                      <Textarea
-                        placeholder="Share your thoughts on this article..."
-                        value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)}
-                        className="min-h-[100px] resize-none"
-                      />
-                    </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Input
+                      placeholder="Your name *"
+                      value={commentName}
+                      onChange={(e) => setCommentName(e.target.value)}
+                      required
+                    />
+                    <Input
+                      type="email"
+                      placeholder="Your email *"
+                      value={commentEmail}
+                      onChange={(e) => setCommentEmail(e.target.value)}
+                      required
+                    />
                   </div>
-                  <div className="flex justify-end">
-                    <Button type="submit" variant="hero" disabled={!newComment.trim()}>
+                  <Textarea
+                    placeholder="Share your thoughts on this article..."
+                    value={newComment}
+                    onChange={(e) => setNewComment(e.target.value)}
+                    className="min-h-[100px] resize-none"
+                    required
+                  />
+                  <div className="flex justify-between items-center">
+                    <p className="text-xs text-muted-foreground">Your email won't be published</p>
+                    <Button type="submit" variant="hero" disabled={!newComment.trim() || !commentName.trim() || !commentEmail.trim()}>
                       Post Comment
                     </Button>
                   </div>
                 </form>
               </Card>
 
-              {/* Comments List */}
+              {/* Comments List with Infinite Scroll */}
               <div className="space-y-6">
-                {comments.map((comment) => (
-                  <Card key={comment.id} className="gradient-card border-border p-6">
-                    <div className="flex gap-4">
-                      <Avatar className="hidden sm:flex">
-                        <AvatarFallback className="bg-primary/10 text-primary">
-                          {comment.avatar}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2 mb-2">
-                          <span className="font-semibold">{comment.author}</span>
-                          <span className="text-sm text-muted-foreground">{comment.date}</span>
-                        </div>
-                        <p className="text-muted-foreground mb-4">{comment.content}</p>
-                        
-                        {/* Comment Actions */}
-                        <div className="flex items-center gap-4">
-                          <button className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors">
-                            <ThumbsUp className="h-4 w-4" />
-                            <span>{comment.likes}</span>
-                          </button>
-                          <button 
-                            onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
-                            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-primary transition-colors"
-                          >
-                            <Reply className="h-4 w-4" />
-                            <span>Reply</span>
-                          </button>
-                        </div>
-
-                        {/* Reply Form */}
-                        {replyingTo === comment.id && (
-                          <div className="mt-4 pl-4 border-l-2 border-border">
-                            <Textarea
-                              placeholder="Write a reply..."
-                              value={replyContent}
-                              onChange={(e) => setReplyContent(e.target.value)}
-                              className="min-h-[80px] resize-none mb-3"
-                            />
-                            <div className="flex gap-2 justify-end">
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                onClick={() => setReplyingTo(null)}
-                              >
-                                Cancel
-                              </Button>
-                              <Button 
-                                variant="hero" 
-                                size="sm" 
-                                onClick={() => handleReplySubmit(comment.id)}
-                                disabled={!replyContent.trim()}
-                              >
-                                Reply
-                              </Button>
-                            </div>
+                {displayedComments.map((comment) => {
+                  const isExpanded = expandedReplies.has(comment.id);
+                  const hasMoreReplies = comment.replies.length > REPLIES_PREVIEW_COUNT;
+                  const visibleReplies = isExpanded ? comment.replies : comment.replies.slice(0, REPLIES_PREVIEW_COUNT);
+                  
+                  return (
+                    <Card key={comment.id} className="gradient-card border-border p-4 sm:p-6">
+                      <div className="flex gap-3 sm:gap-4">
+                        <Avatar className="h-8 w-8 sm:h-10 sm:w-10 flex-shrink-0">
+                          <AvatarFallback className="bg-primary/10 text-primary text-xs sm:text-sm">
+                            {comment.avatar}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-2">
+                            <span className="font-semibold text-sm sm:text-base">{comment.author}</span>
+                            <span className="text-xs sm:text-sm text-muted-foreground">{comment.date}</span>
                           </div>
-                        )}
+                          <p className="text-sm sm:text-base text-muted-foreground mb-3">{comment.content}</p>
+                          
+                          {/* Comment Actions */}
+                          <div className="flex items-center gap-4">
+                            <button className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors">
+                              <ThumbsUp className="h-3 w-3 sm:h-4 sm:w-4" />
+                              <span>{comment.likes}</span>
+                            </button>
+                            <button 
+                              onClick={() => setReplyingTo(replyingTo?.commentId === comment.id && !replyingTo.replyToUser ? null : { commentId: comment.id })}
+                              className="flex items-center gap-1 text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors"
+                            >
+                              <Reply className="h-3 w-3 sm:h-4 sm:w-4" />
+                              <span>Reply</span>
+                            </button>
+                            {comment.replies.length > 0 && (
+                              <span className="text-xs sm:text-sm text-muted-foreground">
+                                {comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}
+                              </span>
+                            )}
+                          </div>
 
-                        {/* Nested Replies */}
-                        {comment.replies.length > 0 && (
-                          <div className="mt-4 space-y-4">
-                            {comment.replies.map((reply) => (
-                              <div key={reply.id} className="pl-4 border-l-2 border-primary/30">
-                                <div className="flex gap-3">
-                                  <Avatar className="h-8 w-8 hidden sm:flex">
-                                    <AvatarFallback className="bg-primary/10 text-primary text-xs">
-                                      {reply.avatar}
-                                    </AvatarFallback>
-                                  </Avatar>
-                                  <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
-                                      <span className="font-semibold text-sm">{reply.author}</span>
-                                      <span className="text-xs text-muted-foreground">{reply.date}</span>
+                          {/* Reply Form */}
+                          {replyingTo?.commentId === comment.id && (
+                            <div className="mt-4 pl-3 sm:pl-4 border-l-2 border-border">
+                              {replyingTo.replyToUser && (
+                                <p className="text-xs text-primary mb-2">Replying to @{replyingTo.replyToUser}</p>
+                              )}
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+                                <Input
+                                  placeholder="Your name *"
+                                  value={replyName}
+                                  onChange={(e) => setReplyName(e.target.value)}
+                                  className="text-sm"
+                                />
+                                <Input
+                                  type="email"
+                                  placeholder="Your email *"
+                                  value={replyEmail}
+                                  onChange={(e) => setReplyEmail(e.target.value)}
+                                  className="text-sm"
+                                />
+                              </div>
+                              <Textarea
+                                placeholder="Write a reply..."
+                                value={replyContent}
+                                onChange={(e) => setReplyContent(e.target.value)}
+                                className="min-h-[60px] resize-none mb-3 text-sm"
+                              />
+                              <div className="flex gap-2 justify-end">
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  onClick={() => {
+                                    setReplyingTo(null);
+                                    setReplyContent("");
+                                  }}
+                                >
+                                  Cancel
+                                </Button>
+                                <Button 
+                                  variant="hero" 
+                                  size="sm" 
+                                  onClick={() => handleReplySubmit(comment.id)}
+                                  disabled={!replyContent.trim() || !replyName.trim() || !replyEmail.trim()}
+                                >
+                                  Reply
+                                </Button>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Nested Replies */}
+                          {visibleReplies.length > 0 && (
+                            <div className="mt-4 space-y-3">
+                              {visibleReplies.map((reply) => (
+                                <div key={reply.id} className="pl-3 sm:pl-4 border-l-2 border-primary/20">
+                                  <div className="flex gap-2 sm:gap-3">
+                                    <Avatar className="h-6 w-6 flex-shrink-0">
+                                      <AvatarFallback className="bg-primary/10 text-primary text-[10px]">
+                                        {reply.avatar}
+                                      </AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex-1 min-w-0">
+                                      <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-1">
+                                        <span className="font-semibold text-xs sm:text-sm">{reply.author}</span>
+                                        {reply.replyTo && (
+                                          <span className="text-xs text-primary">@{reply.replyTo}</span>
+                                        )}
+                                        <span className="text-[10px] sm:text-xs text-muted-foreground">{reply.date}</span>
+                                      </div>
+                                      <p className="text-xs sm:text-sm text-muted-foreground">{reply.content}</p>
+                                      <div className="flex items-center gap-3 mt-1">
+                                        <button className="flex items-center gap-1 text-[10px] sm:text-xs text-muted-foreground hover:text-primary transition-colors">
+                                          <ThumbsUp className="h-3 w-3" />
+                                          <span>{reply.likes}</span>
+                                        </button>
+                                        <button 
+                                          onClick={() => startReplyToReply(comment.id, reply.author)}
+                                          className="text-[10px] sm:text-xs text-muted-foreground hover:text-primary transition-colors"
+                                        >
+                                          Reply
+                                        </button>
+                                      </div>
                                     </div>
-                                    <p className="text-sm text-muted-foreground">{reply.content}</p>
-                                    <button className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors mt-2">
-                                      <ThumbsUp className="h-3 w-3" />
-                                      <span>{reply.likes}</span>
-                                    </button>
                                   </div>
                                 </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                              ))}
+                              
+                              {/* Show more/less replies toggle */}
+                              {hasMoreReplies && (
+                                <button
+                                  onClick={() => toggleReplies(comment.id)}
+                                  className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 transition-colors pl-3 sm:pl-4"
+                                >
+                                  {isExpanded ? (
+                                    <>
+                                      <ChevronUp className="h-3 w-3" />
+                                      Show less replies
+                                    </>
+                                  ) : (
+                                    <>
+                                      <ChevronDown className="h-3 w-3" />
+                                      Show {comment.replies.length - REPLIES_PREVIEW_COUNT} more {comment.replies.length - REPLIES_PREVIEW_COUNT === 1 ? 'reply' : 'replies'}
+                                    </>
+                                  )}
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
+                    </Card>
+                  );
+                })}
+                
+                {/* Load more trigger / loading indicator */}
+                <div ref={loadMoreRef} className="py-4 flex justify-center">
+                  {isLoading && (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span className="text-sm">Loading more comments...</span>
                     </div>
-                  </Card>
-                ))}
+                  )}
+                  {!hasMore && displayedComments.length > 0 && (
+                    <p className="text-sm text-muted-foreground">No more comments to load</p>
+                  )}
+                </div>
               </div>
             </div>
           </div>
