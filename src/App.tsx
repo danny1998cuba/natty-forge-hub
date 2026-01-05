@@ -34,6 +34,7 @@ import Plans from "./pages/admin/Plans";
 import BlogManagement from "./pages/admin/BlogManagement";
 import CommunityManagement from "./pages/admin/CommunityManagement";
 import Settings from "./pages/admin/Settings";
+import EmailTemplates from "./pages/admin/EmailTemplates";
 import CreateUser from "./pages/admin/users/CreateUser";
 import EditUser from "./pages/admin/users/EditUser";
 import CreateProduct from "./pages/admin/products/CreateProduct";
@@ -92,6 +93,7 @@ const AppContent = () => {
             <Route path="blog/:id/edit" element={<EditBlogPost />} />
             <Route path="community" element={<CommunityManagement />} />
             <Route path="settings" element={<Settings />} />
+            <Route path="email-templates" element={<EmailTemplates />} />
           </Route>
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
