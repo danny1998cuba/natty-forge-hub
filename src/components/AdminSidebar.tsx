@@ -8,6 +8,7 @@ import {
   MessageSquare,
   Settings,
   LogOut,
+  Mail,
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,6 +39,7 @@ const menuItems: MenuItem[] = [
   { title: "Blog Posts", url: "/admin/blog", icon: FileText, roles: ['admin', 'editor'] },
   { title: "Community", url: "/admin/community", icon: MessageSquare, roles: ['admin', 'editor', 'moderator'], badge: 3 },
   { title: "Settings", url: "/admin/settings", icon: Settings, roles: ['admin'] },
+  { title: "Email Templates", url: "/admin/email-templates", icon: Mail, roles: ['admin'] },
 ];
 
 export function AdminSidebar() {
