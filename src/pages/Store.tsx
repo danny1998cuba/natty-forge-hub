@@ -3,6 +3,7 @@ import { Navigation } from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { AdPlaceholder } from "@/components/AdPlaceholder";
 import { ShoppingCart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { InlineSearch } from "@/components/InlineSearch";
@@ -84,6 +85,11 @@ const Store = () => {
                 onChange={setSearchQuery}
               />
             </div>
+          </div>
+
+          {/* Ad Placement - Before Products */}
+          <div className="max-w-6xl mx-auto mb-6">
+            <AdPlaceholder size="banner" className="mx-auto" />
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">

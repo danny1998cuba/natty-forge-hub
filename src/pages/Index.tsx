@@ -2,6 +2,7 @@ import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AdPlaceholder } from "@/components/AdPlaceholder";
 import { Flame, Users, TrendingUp, Zap, Youtube, Target, Award, CheckCircle } from "lucide-react";
 import heroImage from "@/assets/hero-image.jpg";
 
@@ -75,6 +76,11 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Ad Placement - After Mission */}
+      <div className="container mx-auto px-4 py-6">
+        <AdPlaceholder size="banner" className="mx-auto" />
+      </div>
 
       {/* Features Section */}
       <section className="py-20 bg-accent/50">
@@ -169,6 +175,11 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Ad Placement - Before Testimonials */}
+      <div className="container mx-auto px-4 py-6">
+        <AdPlaceholder size="banner" className="mx-auto" />
+      </div>
 
       {/* Testimonials Section */}
       <section className="py-20">

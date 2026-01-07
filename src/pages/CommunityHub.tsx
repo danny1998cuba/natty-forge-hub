@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
+import { AdPlaceholder } from "@/components/AdPlaceholder";
 import { Users, MessageSquare, Trophy, Heart, TrendingUp, Pin } from "lucide-react";
 import { InlineSearch } from "@/components/InlineSearch";
 
@@ -226,6 +227,9 @@ const CommunityHub = () => {
                   ))}
                 </div>
               </Card>
+
+              {/* Sidebar Ad */}
+              <AdPlaceholder size="sidebar" className="mx-auto" />
 
               {/* Community Stats */}
               <Card className="gradient-card border-border p-6">
