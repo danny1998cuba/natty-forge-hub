@@ -382,6 +382,9 @@ const BlogPost = () => {
                 [&_blockquote_cite]:text-sm [&_blockquote_cite]:text-muted-foreground [&_blockquote_cite]:not-italic [&_blockquote_cite]:font-medium`}
               dangerouslySetInnerHTML={{ __html: post.content }}
             />
+            
+            {/* Content inline ad - within article */}
+            <AdPlaceholder format="content-inline" className="mt-8" />
           </Card>
 
           {/* Tags Section - at end of content */}
@@ -408,16 +411,17 @@ const BlogPost = () => {
             </Button>
           </Card>
 
-          {/* Ad Placement - After CTA */}
+          {/* Ad Placement - After CTA (responsive) */}
           <div className="mt-8">
-            <AdPlaceholder size="banner" className="mx-auto" />
+            <AdPlaceholder format="mobile-banner" className="mx-auto md:hidden" />
+            <AdPlaceholder format="banner" className="mx-auto hidden md:flex" />
           </div>
 
-          {/* Related Posts Section */}
+          {/* Related Posts Section with Ad */}
           <div className="mt-12">
             <Separator className="mb-8" />
             <h2 className="text-2xl font-bold mb-6">Related Articles</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {mockRelatedPosts.map((relatedPost) => (
                 <Link key={relatedPost.id} to={`/blog/${relatedPost.id}`}>
                   <Card className="gradient-card border-border overflow-hidden group hover:border-primary/50 transition-all duration-300">
@@ -442,6 +446,8 @@ const BlogPost = () => {
                   </Card>
                 </Link>
               ))}
+              {/* Sponsored related article */}
+              <AdPlaceholder format="related-article" />
             </div>
           </div>
 

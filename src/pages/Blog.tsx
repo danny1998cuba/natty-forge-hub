@@ -139,52 +139,63 @@ const Blog = () => {
             </div>
           </div>
 
-          {/* Ad Placement - Before Posts */}
+          {/* Ad Placement - Before Posts (Mobile-friendly) */}
           <div className="max-w-6xl mx-auto mb-6">
-            <AdPlaceholder size="banner" className="mx-auto" />
+            <AdPlaceholder format="mobile-banner" className="mx-auto md:hidden" />
+            <AdPlaceholder format="banner" className="mx-auto hidden md:flex" />
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-            {blogPosts.map((post, index) => (
-              <>
-                {/* Insert ad after every 4 posts */}
-                {index > 0 && index % 4 === 0 && (
-                  <div className="md:col-span-2">
-                    <AdPlaceholder size="inline" className="my-2" />
-                  </div>
-                )}
-              <Card key={post.id} className="gradient-card border-border overflow-hidden hover:border-primary transition-smooth group">
-                <div className="aspect-video overflow-hidden">
-                  <img 
-                    src={post.image} 
-                    alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-smooth"
+            {blogPosts.map((post, index) => {
+              const elements = [];
+              
+              // Insert blog-card style ad after every 3 posts
+              if (index > 0 && index % 3 === 0) {
+                elements.push(
+                  <AdPlaceholder 
+                    key={`ad-card-${index}`}
+                    format="blog-card" 
+                    category="Sponsored"
+                    readTime="Partner"
                   />
-                </div>
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Badge variant="outline" className="border-primary text-primary">
-                      {post.category}
-                    </Badge>
-                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4" />
-                      {post.readTime}
-                    </div>
-                    {getAccessIcon(post.access)}
+                );
+              }
+              
+              elements.push(
+                <Card key={post.id} className="gradient-card border-border overflow-hidden hover:border-primary transition-smooth group">
+                  <div className="aspect-video overflow-hidden">
+                    <img 
+                      src={post.image} 
+                      alt={post.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-smooth"
+                    />
                   </div>
-                  <h3 className="mb-2 group-hover:text-primary transition-smooth">{post.title}</h3>
-                  <p className="text-muted-foreground mb-4">{post.excerpt}</p>
-                  <Button 
-                    variant={post.access === "private" ? "hero" : "outline"}
-                    className={post.access !== "private" ? "border-primary text-primary hover:bg-primary/10" : ""}
-                    onClick={() => navigate(`/blog/${post.id}`)}
-                  >
-                    {post.access === "private" ? "Members Only" : "Read More"}
-                  </Button>
-                </div>
-              </Card>
-              </>
-            ))}
+                  <div className="p-6">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Badge variant="outline" className="border-primary text-primary">
+                        {post.category}
+                      </Badge>
+                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        {post.readTime}
+                      </div>
+                      {getAccessIcon(post.access)}
+                    </div>
+                    <h3 className="mb-2 group-hover:text-primary transition-smooth">{post.title}</h3>
+                    <p className="text-muted-foreground mb-4">{post.excerpt}</p>
+                    <Button 
+                      variant={post.access === "private" ? "hero" : "outline"}
+                      className={post.access !== "private" ? "border-primary text-primary hover:bg-primary/10" : ""}
+                      onClick={() => navigate(`/blog/${post.id}`)}
+                    >
+                      {post.access === "private" ? "Members Only" : "Read More"}
+                    </Button>
+                  </div>
+                </Card>
+              );
+              
+              return elements;
+            })}
           </div>
 
           {totalPages > 1 && (
