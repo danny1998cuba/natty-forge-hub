@@ -3,6 +3,7 @@ import { Navigation } from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AdPlaceholder } from "@/components/AdPlaceholder";
 import { Clock, Lock, Eye } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { InlineSearch } from "@/components/InlineSearch";
@@ -138,8 +139,20 @@ const Blog = () => {
             </div>
           </div>
 
+          {/* Ad Placement - Before Posts */}
+          <div className="max-w-6xl mx-auto mb-6">
+            <AdPlaceholder size="banner" className="mx-auto" />
+          </div>
+
           <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-            {blogPosts.map((post) => (
+            {blogPosts.map((post, index) => (
+              <>
+                {/* Insert ad after every 4 posts */}
+                {index > 0 && index % 4 === 0 && (
+                  <div className="md:col-span-2">
+                    <AdPlaceholder size="inline" className="my-2" />
+                  </div>
+                )}
               <Card key={post.id} className="gradient-card border-border overflow-hidden hover:border-primary transition-smooth group">
                 <div className="aspect-video overflow-hidden">
                   <img 
@@ -170,6 +183,7 @@ const Blog = () => {
                   </Button>
                 </div>
               </Card>
+              </>
             ))}
           </div>
 

@@ -3,6 +3,7 @@ import { Navigation } from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AdPlaceholder } from "@/components/AdPlaceholder";
 import { TrendingUp, Dumbbell, Target, Award, Zap, Trophy } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { InlineSearch } from "@/components/InlineSearch";
@@ -130,6 +131,11 @@ const Workouts = () => {
                 }}
               />
             </div>
+          </div>
+
+          {/* Ad Placement - Before Programs */}
+          <div className="max-w-6xl mx-auto mb-6">
+            <AdPlaceholder size="banner" className="mx-auto" />
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">

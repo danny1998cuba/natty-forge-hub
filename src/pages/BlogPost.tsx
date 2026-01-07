@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AdPlaceholder } from "@/components/AdPlaceholder";
 import { Clock, ArrowLeft, Share2, Bookmark, MessageSquare, ThumbsUp, Reply, ChevronDown, ChevronUp, Loader2 } from "lucide-react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -406,6 +407,11 @@ const BlogPost = () => {
               Become a Member
             </Button>
           </Card>
+
+          {/* Ad Placement - After CTA */}
+          <div className="mt-8">
+            <AdPlaceholder size="banner" className="mx-auto" />
+          </div>
 
           {/* Related Posts Section */}
           <div className="mt-12">
