@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Footer } from "@/components/Footer";
 import { AdminLayout } from "@/components/AdminLayout";
 import Index from "./pages/Index";
+import About from "./pages/About";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Workouts from "./pages/Workouts";
@@ -55,6 +56,7 @@ const AppContent = () => {
       <div className="flex-1">
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/about" element={<About />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:id" element={<BlogPost />} />
           <Route path="/workouts" element={<Workouts />} />

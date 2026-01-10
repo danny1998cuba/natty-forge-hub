@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { GlobalSearch } from "./GlobalSearch";
 const navItems = [
   { name: "Home", path: "/" },
+  { name: "About", path: "/about" },
   { name: "Blog", path: "/blog" },
   { name: "Workouts", path: "/workouts" },
   { name: "Store", path: "/store" },
