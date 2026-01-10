@@ -16,6 +16,7 @@ import Store from "./pages/Store";
 import ProductDetails from "./pages/ProductDetails";
 import Community from "./pages/Community";
 import CommunityHub from "./pages/CommunityHub";
+import SuccessStories from "./pages/SuccessStories";
 import Tools from "./pages/Tools";
 import Contact from "./pages/Contact";
 import Auth from "./pages/Auth";
@@ -66,6 +67,7 @@ const AppContent = () => {
           <Route path="/store/:id" element={<ProductDetails />} />
           <Route path="/community" element={<Community />} />
           <Route path="/community/hub" element={<CommunityHub />} />
+          <Route path="/success-stories" element={<SuccessStories />} />
           <Route path="/tools" element={<Tools />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/auth" element={<Auth />} />

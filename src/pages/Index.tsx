@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { AdPlaceholder } from "@/components/AdPlaceholder";
-import { Flame, Users, TrendingUp, Zap, Youtube, Target, Award, CheckCircle } from "lucide-react";
+import { Flame, Users, TrendingUp, Zap, Youtube, Target, Award, CheckCircle, ArrowRight } from "lucide-react";
+import { Link } from "react-router-dom";
 import heroImage from "@/assets/hero-image.jpg";
 
 const Index = () => {
@@ -184,7 +185,15 @@ const Index = () => {
       {/* Testimonials Section */}
       <section className="py-20">
         <div className="container mx-auto px-4">
-          <h2 className="text-center mb-12 text-primary">Success Stories</h2>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-12">
+            <h2 className="text-primary">Success Stories</h2>
+            <Button variant="ghost" className="text-primary hover:text-secondary mt-4 md:mt-0" asChild>
+              <Link to="/success-stories">
+                View All Stories
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
           <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
             {[
               {
@@ -218,6 +227,13 @@ const Index = () => {
                 </div>
               </Card>
             ))}
+          </div>
+          <div className="text-center mt-8">
+            <Button variant="outline" asChild>
+              <Link to="/success-stories">
+                See More Transformations
+              </Link>
+            </Button>
           </div>
         </div>
       </section>
