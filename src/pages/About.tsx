@@ -1,7 +1,7 @@
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Dumbbell, Target, Users, Heart, Award, Youtube } from "lucide-react";
+import { Dumbbell, Target, Users, Heart, Award, Youtube, Instagram, Twitter, Linkedin, Github } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const About = () => {
@@ -30,10 +30,28 @@ const About = () => {
 
   const team = [
     {
-      name: "Currently Natty",
+      name: "Samuel Fernández",
+      alias: "Currently Natty",
       role: "Founder & Head Coach",
-      description: "Passionate about natural bodybuilding and helping others achieve their fitness goals without shortcuts.",
+      description: "Passionate about natural bodybuilding and helping others achieve their fitness goals without shortcuts. Creator of the Currently Natty YouTube channel and community leader.",
       image: "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=400&h=400&fit=crop",
+      socials: {
+        youtube: "https://youtube.com/@currentlynatty",
+        instagram: "https://instagram.com/currentlynatty",
+        twitter: "https://twitter.com/currentlynatty",
+      },
+    },
+    {
+      name: "Daniel González",
+      alias: "CoreX4Dev",
+      role: "Co-founder & Developer",
+      description: "Full-stack developer and fitness enthusiast. Responsible for building and maintaining the Currently Natty platform and digital experience.",
+      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop",
+      socials: {
+        github: "https://github.com/corex4dev",
+        linkedin: "https://linkedin.com/in/corex4dev",
+        twitter: "https://twitter.com/corex4dev",
+      },
     },
   ];
 
@@ -130,25 +148,87 @@ const About = () => {
 
       {/* Team Section */}
       <section className="py-16 px-4 bg-card/50">
-        <div className="container mx-auto max-w-4xl">
+        <div className="container mx-auto max-w-5xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold mb-4">Meet the Team</h2>
             <p className="text-muted-foreground">
               The faces behind Currently Natty.
             </p>
           </div>
-          <div className="flex justify-center">
+          <div className="grid md:grid-cols-2 gap-8 justify-center">
             {team.map((member, index) => (
-              <Card key={index} className="bg-card border-border max-w-sm">
-                <CardContent className="p-6 text-center">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-32 h-32 rounded-full mx-auto mb-4 object-cover"
-                  />
-                  <h3 className="font-semibold text-xl mb-1">{member.name}</h3>
-                  <p className="text-primary text-sm mb-3">{member.role}</p>
-                  <p className="text-sm text-muted-foreground">{member.description}</p>
+              <Card key={index} className="bg-card border-border hover:border-primary/50 transition-smooth">
+                <CardContent className="p-8">
+                  <div className="flex flex-col sm:flex-row gap-6 items-center sm:items-start">
+                    <img
+                      src={member.image}
+                      alt={member.name}
+                      className="w-28 h-28 rounded-full object-cover ring-4 ring-primary/20"
+                    />
+                    <div className="text-center sm:text-left flex-1">
+                      <h3 className="font-semibold text-xl">{member.name}</h3>
+                      <p className="text-primary font-medium text-sm mb-1">@{member.alias}</p>
+                      <p className="text-muted-foreground text-sm mb-3">{member.role}</p>
+                      <p className="text-sm text-muted-foreground mb-4">{member.description}</p>
+                      <div className="flex gap-3 justify-center sm:justify-start">
+                        {member.socials.youtube && (
+                          <a
+                            href={member.socials.youtube}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-full bg-muted hover:bg-primary/20 hover:text-primary transition-smooth"
+                            aria-label="YouTube"
+                          >
+                            <Youtube className="h-4 w-4" />
+                          </a>
+                        )}
+                        {member.socials.instagram && (
+                          <a
+                            href={member.socials.instagram}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-full bg-muted hover:bg-primary/20 hover:text-primary transition-smooth"
+                            aria-label="Instagram"
+                          >
+                            <Instagram className="h-4 w-4" />
+                          </a>
+                        )}
+                        {member.socials.twitter && (
+                          <a
+                            href={member.socials.twitter}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-full bg-muted hover:bg-primary/20 hover:text-primary transition-smooth"
+                            aria-label="Twitter"
+                          >
+                            <Twitter className="h-4 w-4" />
+                          </a>
+                        )}
+                        {member.socials.github && (
+                          <a
+                            href={member.socials.github}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-full bg-muted hover:bg-primary/20 hover:text-primary transition-smooth"
+                            aria-label="GitHub"
+                          >
+                            <Github className="h-4 w-4" />
+                          </a>
+                        )}
+                        {member.socials.linkedin && (
+                          <a
+                            href={member.socials.linkedin}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2 rounded-full bg-muted hover:bg-primary/20 hover:text-primary transition-smooth"
+                            aria-label="LinkedIn"
+                          >
+                            <Linkedin className="h-4 w-4" />
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
                 </CardContent>
               </Card>
             ))}
