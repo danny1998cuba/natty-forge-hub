@@ -1,13 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Navigation } from "@/components/Navigation";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Award, Star, Plus, TrendingUp, Users, Trophy } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { Award, Star, Plus, TrendingUp, Users, Trophy, FileText, Lock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface SuccessStory {
@@ -20,15 +21,23 @@ interface SuccessStory {
   featured?: boolean;
 }
 
+const STORIES_PER_PAGE = 6;
+
 const SuccessStories = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(STORIES_PER_PAGE);
   const [formData, setFormData] = useState({
     name: "",
     result: "",
     rating: 5,
     content: "",
   });
+
+  // Mock authentication state - replace with real auth
+  const isAuthenticated = false;
 
   // Mock data - in a real app, this would come from a database
   const [stories] = useState<SuccessStory[]>([
@@ -85,6 +94,14 @@ const SuccessStories = () => {
     },
   ]);
 
+  const handleShareStoryClick = () => {
+    if (isAuthenticated) {
+      setDialogOpen(true);
+    } else {
+      setAuthDialogOpen(true);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -117,6 +134,8 @@ const SuccessStories = () => {
 
   const featuredStories = stories.filter((s) => s.featured);
   const otherStories = stories.filter((s) => !s.featured);
+  const visibleOtherStories = otherStories.slice(0, visibleCount);
+  const hasMoreStories = visibleCount < otherStories.length;
 
   return (
     <div className="min-h-screen bg-background">
@@ -134,13 +153,13 @@ const SuccessStories = () => {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
             Real transformations from real people. These are the stories of our community members who achieved their fitness goals naturally.
           </p>
+          <Button variant="hero" size="lg" onClick={handleShareStoryClick}>
+            <Plus className="mr-2 h-5 w-5" />
+            Share Your Story
+          </Button>
+
+          {/* Submit Story Dialog */}
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button variant="hero" size="lg">
-                <Plus className="mr-2 h-5 w-5" />
-                Share Your Story
-              </Button>
-            </DialogTrigger>
             <DialogContent className="sm:max-w-lg">
               <DialogHeader>
                 <DialogTitle>Share Your Success Story</DialogTitle>
@@ -204,6 +223,31 @@ const SuccessStories = () => {
                   </Button>
                 </div>
               </form>
+            </DialogContent>
+          </Dialog>
+
+          {/* Auth Required Dialog */}
+          <Dialog open={authDialogOpen} onOpenChange={setAuthDialogOpen}>
+            <DialogContent className="sm:max-w-md text-center">
+              <DialogHeader>
+                <div className="flex justify-center mb-4">
+                  <div className="p-3 rounded-full bg-primary/20">
+                    <Lock className="h-8 w-8 text-primary" />
+                  </div>
+                </div>
+                <DialogTitle className="text-xl">Members Only Feature</DialogTitle>
+                <DialogDescription className="text-muted-foreground pt-2">
+                  Sharing your success story is an exclusive feature for our members. Join our community to inspire others with your transformation journey!
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex flex-col gap-3 mt-4">
+                <Button variant="hero" onClick={() => navigate("/plans")}>
+                  View Membership Plans
+                </Button>
+                <Button variant="outline" onClick={() => navigate("/auth")}>
+                  Already a member? Sign In
+                </Button>
+              </div>
             </DialogContent>
           </Dialog>
         </div>
@@ -271,20 +315,56 @@ const SuccessStories = () => {
       <section className="py-16 px-4 bg-card/50">
         <div className="container mx-auto max-w-6xl">
           <h2 className="text-2xl font-bold mb-8">More Transformations</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {otherStories.map((story) => (
-              <Card key={story.id} className="bg-card border-border hover:border-primary/50 transition-smooth">
-                <CardContent className="p-6">
-                  <div className="flex gap-1 mb-3">{renderStars(story.rating)}</div>
-                  <p className="text-muted-foreground italic mb-4 line-clamp-4">"{story.content}"</p>
-                  <div className="border-t border-border pt-4">
-                    <p className="font-semibold">{story.name}</p>
-                    <p className="text-sm text-primary">{story.result}</p>
+          
+          {otherStories.length === 0 ? (
+            /* Empty State */
+            <Card className="bg-card border-dashed border-2 border-border">
+              <CardContent className="py-16 text-center">
+                <div className="flex justify-center mb-4">
+                  <div className="p-4 rounded-full bg-muted">
+                    <FileText className="h-10 w-10 text-muted-foreground" />
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                </div>
+                <h3 className="text-xl font-semibold mb-2">No Stories Yet</h3>
+                <p className="text-muted-foreground max-w-md mx-auto mb-6">
+                  Be the first to share your transformation journey! Your story could inspire others in our community.
+                </p>
+                <Button variant="hero" onClick={handleShareStoryClick}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Share Your Story
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {visibleOtherStories.map((story) => (
+                  <Card key={story.id} className="bg-card border-border hover:border-primary/50 transition-smooth">
+                    <CardContent className="p-6">
+                      <div className="flex gap-1 mb-3">{renderStars(story.rating)}</div>
+                      <p className="text-muted-foreground italic mb-4 line-clamp-4">"{story.content}"</p>
+                      <div className="border-t border-border pt-4">
+                        <p className="font-semibold">{story.name}</p>
+                        <p className="text-sm text-primary">{story.result}</p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              
+              {hasMoreStories && (
+                <div className="flex justify-center mt-8">
+                  <Button 
+                    variant="outline" 
+                    size="lg"
+                    onClick={() => setVisibleCount(prev => prev + STORIES_PER_PAGE)}
+                  >
+                    Load More Stories
+                  </Button>
+                </div>
+              )}
+            </>
+          )}
         </div>
       </section>
 
@@ -299,7 +379,7 @@ const SuccessStories = () => {
             <Button variant="hero" size="lg" asChild>
               <a href="/plans">Start Your Journey</a>
             </Button>
-            <Button variant="outline" size="lg" onClick={() => setDialogOpen(true)}>
+            <Button variant="outline" size="lg" onClick={handleShareStoryClick}>
               <Plus className="mr-2 h-4 w-4" />
               Share Your Story
             </Button>
